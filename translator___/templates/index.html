@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Translator // Neural Link</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="10" stroke="#22d3ee" stroke-width="1.5"/>
+          <path d="M11 1C11 1 7 6 7 11C7 16 11 21 11 21" stroke="#22d3ee" stroke-width="1.5"/>
+          <path d="M11 1C11 1 15 6 15 11C15 16 11 21 11 21" stroke="#22d3ee" stroke-width="1.5"/>
+          <path d="M1 11H21" stroke="#22d3ee" stroke-width="1.5"/>
+        </svg>
+        <span>TRANSLATOR</span>
+      </div>
+      <span class="powered-by">Free &middot; No API Key</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="lang-bar">
+      <select id="srcLang" class="lang-select" aria-label="Source language">
+        {% for lang in languages %}
+        <option value="{{ lang }}" {% if lang == "Auto-detect" %}selected{% endif %}>{{ lang }}</option>
+        {% endfor %}
+      </select>
+      <button id="swapBtn" class="swap-btn" title="Swap languages" aria-label="Swap languages">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 6h14M13 3l3 3-3 3M16 12H2M5 9l-3 3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <select id="tgtLang" class="lang-select" aria-label="Target language">
+        {% for lang in languages %}
+        {% if lang != "Auto-detect" %}
+        <option value="{{ lang }}" {% if lang == "Spanish" %}selected{% endif %}>{{ lang }}</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Quick language presets (multiple "patients" / shortcuts) -->
+    <div class="quick-langs">
+      <div class="quick-langs-label">Quick Select Target</div>
+      <div class="chip-row" id="chipRow">
+        <button class="lang-chip" data-lang="Spanish">🇪🇸 Spanish</button>
+        <button class="lang-chip" data-lang="French">🇫🇷 French</button>
+        <button class="lang-chip" data-lang="German">🇩🇪 German</button>
+        <button class="lang-chip" data-lang="Hindi">🇮🇳 Hindi</button>
+        <button class="lang-chip" data-lang="Marathi">🇮🇳 Marathi</button>
+        <button class="lang-chip" data-lang="Japanese">🇯🇵 Japanese</button>
+        <button class="lang-chip" data-lang="Chinese (Simplified)">🇨🇳 Chinese</button>
+        <button class="lang-chip" data-lang="Arabic">🇸🇦 Arabic</button>
+        <button class="lang-chip" data-lang="Russian">🇷🇺 Russian</button>
+        <button class="lang-chip" data-lang="Portuguese">🇵🇹 Portuguese</button>
+      </div>
+    </div>
+
+    <div class="panels" style="margin-top: 20px;">
+      <div class="panel">
+        <div class="panel-top">
+          <span class="panel-label">⟨ Source Signal</span>
+          <span class="char-count" id="charCount">0 / 5000</span>
+        </div>
+        <textarea id="srcText" placeholder="Enter text to translate…" maxlength="5000" aria-label="Source text"></textarea>
+        <div class="panel-bottom">
+          <button class="icon-btn" id="clearBtn" title="Clear">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Clear
+          </button>
+          <button class="icon-btn" id="srcTtsBtn" title="Listen" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4.5H4.5L7 2v10L4.5 9.5H2V4.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4a3 3 0 0 1 0 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Listen
+          </button>
+        </div>
+      </div>
+
+      <div class="panel panel--output">
+        <div class="panel-top">
+          <span class="panel-label" id="tgtLabel">Decoded Output ⟩</span>
+          <span class="status-badge" id="statusBadge" style="display:none"></span>
+        </div>
+        <div class="output-area" id="outputArea" aria-live="polite">
+          <span class="placeholder">Translation will appear here</span>
+        </div>
+        <div class="panel-bottom">
+          <button class="icon-btn" id="copyBtn" title="Copy" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="4" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M4 4V2.5A1.5 1.5 0 0 1 5.5 1H11.5A1.5 1.5 0 0 1 13 2.5V8.5A1.5 1.5 0 0 1 11.5 10H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Copy
+          </button>
+          <button class="icon-btn" id="tgtTtsBtn" title="Listen" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4.5H4.5L7 2v10L4.5 9.5H2V4.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4a3 3 0 0 1 0 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Listen
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button class="translate-btn" id="translateBtn" disabled>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M9 1C9 1 6 5 6 9s3 8 3 8" stroke="currentColor" stroke-width="1.5"/><path d="M9 1c0 0 3 4 3 8s-3 8-3 8" stroke="currentColor" stroke-width="1.5"/><path d="M1 9h16" stroke="currentColor" stroke-width="1.5"/></svg>
+      <span id="btnLabel">Translate</span>
+    </button>
+
+    <!-- Translation history (multiple "patients" of past translations) -->
+    <div class="history-section">
+      <div class="history-header">
+        <span class="history-title">⟲ Recent Translations</span>
+        <button class="clear-history-btn" id="clearHistoryBtn">Clear all</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">No translations yet — your history will appear here</div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">Copied to clipboard</div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
