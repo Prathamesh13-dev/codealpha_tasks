@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ Chatbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Background grid ── -->
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="layout">
+
+    <!-- ══ LEFT SIDEBAR — FAQ Browser ══════════════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">⬡</span>
+          <span class="logo-text">FAQBot</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">&#9776;</button>
+      </div>
+
+      <div class="search-wrap">
+        <input type="text" id="faqSearch" placeholder="Search FAQs…" class="faq-search" autocomplete="off" />
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <div class="faq-list" id="faqList">
+        <div class="faq-loading">Loading FAQs…</div>
+      </div>
+    </aside>
+
+    <!-- ══ MAIN — Chat ═══════════════════════════════════════════════════════ -->
+    <main class="chat-area">
+
+      <!-- Header -->
+      <header class="chat-header">
+        <button class="sidebar-toggle-mobile" id="sidebarToggleMobile" title="Browse FAQs">&#9776;</button>
+        <div class="chat-header-info">
+          <div class="bot-avatar">🤖</div>
+          <div>
+            <div class="chat-title">FAQ Assistant</div>
+            <div class="chat-subtitle" id="statusLine">NLP-powered · 25 FAQs loaded</div>
+          </div>
+        </div>
+        <button class="clear-btn" id="clearBtn" title="Clear chat">↺ Clear</button>
+      </header>
+
+      <!-- Messages -->
+      <div class="messages" id="messages"></div>
+
+      <!-- Suggestions -->
+      <div class="suggestions" id="suggestions">
+        <button class="chip" data-q="What is Python?">What is Python?</button>
+        <button class="chip" data-q="What is NLP?">What is NLP?</button>
+        <button class="chip" data-q="How does cosine similarity work?">Cosine similarity?</button>
+        <button class="chip" data-q="How do I install pip packages?">Install pip packages?</button>
+        <button class="chip" data-q="What is a virtual environment?">Virtual environment?</button>
+      </div>
+
+      <!-- Input -->
+      <div class="input-bar">
+        <textarea
+          id="userInput"
+          placeholder="Ask me anything…"
+          rows="1"
+          autocomplete="off"
+          spellcheck="true"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" title="Send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
