@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision AI | Live Tracking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #0f172a;
+            --panel-bg: #1e293b;
+            --border-color: #334155;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 320px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .logo-text h1 {
+            font-size: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .logo-text span {
+            font-size: 12px;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* Stats Panel */
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            color: var(--accent-green);
+        }
+
+        .stat-details h3 {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-details p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Controls Section (UI Mockup for future backend wiring) */
+        .controls-section {
+            margin-top: 20px;
+            flex-grow: 1;
+        }
+
+        .controls-section h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: var(--panel-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse-animation 1.5s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Video Feed Container */
+        .video-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .video-feed {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Decorative Corners for Video */
+        .corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--accent-blue);
+        }
+        .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo-container">
+            <i class="fa-solid fa-eye logo-icon"></i>
+            <div class="logo-text">
+                <h1>Vision AI</h1>
+                <span>Object Tracking Engine</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <i class="fa-solid fa-microchip stat-icon"></i>
+            <div class="stat-details">
+                <h3>Compute Model</h3>
+                <p>YOLOv8 Small</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <i class="fa-solid fa-network-wired stat-icon" style="color: var(--accent-blue);"></i>
+            <div class="stat-details">
+                <h3>Tracker Algorithm</h3>
+                <p>SORT</p>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <h3>Detection Parameters</h3>
+            
+            <div class="control-group">
+                <label>
+                    <span>Confidence Threshold</span>
+                    <span id="conf-val">35%</span>
+                </label>
+                <input type="range" min="1" max="100" value="35" oninput="document.getElementById('conf-val').innerText = this.value + '%'">
+            </div>
+
+            <div class="control-group">
+                <label>
+                    <span>IoU Overlap</span>
+                    <span id="iou-val">45%</span>
+                </label>
+                <input type="range" min="1" max="100" value="45" oninput="document.getElementById('iou-val').innerText = this.value + '%'">
+            </div>
+            
+            <p style="font-size: 11px; color: var(--text-muted); margin-top: 20px; line-height: 1.5;">
+                <i class="fa-solid fa-circle-info"></i> Sliders are visual placeholders. Backend routing required to adjust live stream parameters dynamically.
+            </p>
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="header-bar">
+            <div>
+                <h2 style="font-size: 18px;">Live Hardware Feed</h2>
+                <p style="font-size: 12px; color: var(--text-muted);">Source: Default Camera (Index 0)</p>
+            </div>
+            <div class="status-badge">
+                <div class="pulse"></div>
+                Stream Active
+            </div>
+        </div>
+
+        <div class="video-container">
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+            
+            <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Video Stream Loading...">
+        </div>
+
+    </div>
+
+</body>
+</html>
